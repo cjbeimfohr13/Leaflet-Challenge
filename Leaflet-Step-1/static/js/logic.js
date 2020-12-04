@@ -22,19 +22,48 @@ function createFeatures(earthquakeData) {
     opacity: 1,
     fillOpacity: 0.8
 };
+
+function getColor(mag) {
+  var color="";
+  if (mag <= 2){
+    color= "#ffff00"
+  }
+  else if (mag<= 3){
+    color="#ffbf00"
+}
+  else if (mag<=4){
+    color="#ff8000"
+  }
+  else if (mag<=5){
+    color="#e60000"
+  }
+  else {color="#800000"}
+  
+  return color;
+};
+
+function getRadius(mag){
+  if (mag<=1){
+    return 5
+  }
+  return mag* 5;
+}
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
     onEachFeature: onEachFeature,
     pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        }
-
-  });
+            return new L.CircleMarker(latlng, {radius: getRadius(feature.properties.mag), 
+              fillOpacity: 1, 
+              color: 'black', 
+              fillColor: getColor(feature.properties.mag), 
+              weight: 1,});
+},
+       
+});
 
   // Sending our earthquakes layer to the createMap function
   createMap(earthquakes);
-}
 
 function createMap(earthquakes) {
 
@@ -80,46 +109,4 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 }
-
-// circle coloring 
-// var geojsonMarkerOptions = {
-//   radius: 8,
-//   fillColor: "#ff7800",
-//   color: "#000",
-//   weight: 1,
-//   opacity: 1,
-//   fillOpacity: 0.8
-// };
-
-// L.geoJSON(someGeojsonFeature, {
-//   pointToLayer: function (feature, latlng) {
-//       return L.circleMarker(latlng, geojsonMarkerOptions);
-//   }
-// }).addTo(map);
-
-// for (var i = 0; i < features.properties.mag.length; i++) {
-
-//   // Conditionals for earthquake points
-//   var color = "";
-//   if (features.properties.mag[i].points<1) {
-//     color = "yellow";
-//   }
-//   else if (features.properties.mag[i].points <2) {
-//     color = "blue";
-//   }
-//   else if (features.properties.mag[i].points > 90) {
-//     color = "green";
-//   }
-//   else {
-//     color = "red";
-//   }
-
-//   // Add circles to map
-//   L.circle(countries[i].location, {
-//     fillOpacity: 0.75,
-//     color: "white",
-//     fillColor: color,
-//     // Adjust radius
-//     radius: countries[i].points * 1500
-//   }).bindPopup("<h1>" + countries[i].name + "</h1> <hr> <h3>Points: " + countries[i].points + "</h3>").addTo(myMap);
-// }
+};
