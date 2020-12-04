@@ -1,8 +1,5 @@
 var queryUrl="https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-02"
 
-// var queryUrl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=" +
-//   "2014-01-02&maxlongitude=-69.52148437&minlongitude=-123.83789062&maxlatitude=48.74894534&minlatitude=25.16517337";
-
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
   createFeatures(data.features);
@@ -17,10 +14,22 @@ function createFeatures(earthquakeData) {
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
   }
 
+  var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
-    onEachFeature: onEachFeature
+    onEachFeature: onEachFeature,
+    pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        }
+
   });
 
   // Sending our earthquakes layer to the createMap function
@@ -73,3 +82,44 @@ function createMap(earthquakes) {
 }
 
 // circle coloring 
+// var geojsonMarkerOptions = {
+//   radius: 8,
+//   fillColor: "#ff7800",
+//   color: "#000",
+//   weight: 1,
+//   opacity: 1,
+//   fillOpacity: 0.8
+// };
+
+// L.geoJSON(someGeojsonFeature, {
+//   pointToLayer: function (feature, latlng) {
+//       return L.circleMarker(latlng, geojsonMarkerOptions);
+//   }
+// }).addTo(map);
+
+// for (var i = 0; i < features.properties.mag.length; i++) {
+
+//   // Conditionals for earthquake points
+//   var color = "";
+//   if (features.properties.mag[i].points<1) {
+//     color = "yellow";
+//   }
+//   else if (features.properties.mag[i].points <2) {
+//     color = "blue";
+//   }
+//   else if (features.properties.mag[i].points > 90) {
+//     color = "green";
+//   }
+//   else {
+//     color = "red";
+//   }
+
+//   // Add circles to map
+//   L.circle(countries[i].location, {
+//     fillOpacity: 0.75,
+//     color: "white",
+//     fillColor: color,
+//     // Adjust radius
+//     radius: countries[i].points * 1500
+//   }).bindPopup("<h1>" + countries[i].name + "</h1> <hr> <h3>Points: " + countries[i].points + "</h3>").addTo(myMap);
+// }
